@@ -33,6 +33,8 @@ func CalcPatchLocation() string {
 		return *versionString
 	}
 
+	// 0000 0000 0000 0000
+	// 0111 1111 1111 1111
 	ret := int(MapleVersion & 0x7FFF) //  AND연산으로 signed bit 날림
 	ret ^= int(RemoveWebCookie) << 15 // 15비트 shift하고 XOR
 	ret ^= int(SubVersion) << 16

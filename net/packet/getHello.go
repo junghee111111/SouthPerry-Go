@@ -1,14 +1,15 @@
 package packet
 
 import (
-	"awesomeProject/net"
+	"SouthPerry/net"
+	"SouthPerry/net/util"
 	"fmt"
 	"math/rand"
 )
 
 func BuildGetHello() []byte {
 	// init
-	p := &net.MaplePacketWriter{}
+	p := &util.MaplePacketWriter{}
 
 	// constants
 	ivRecv := []byte{70, 114, 122, byte(rand.Intn(256))}
