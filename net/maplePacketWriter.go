@@ -15,10 +15,6 @@ func (p *MaplePacketWriter) WriteShort(v uint16) {
 	binary.Write(&p.buf, binary.LittleEndian, v)
 }
 
-func (p *MaplePacketWriter) WriteByte(v byte) {
-	p.buf.WriteByte(v)
-}
-
 func (p *MaplePacketWriter) Write(data []byte) {
 	p.buf.Write(data)
 }
