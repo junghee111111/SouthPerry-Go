@@ -1,20 +1,13 @@
 package packet
 
 import (
-	"SouthPerry/net"
 	"SouthPerry/net/util"
 	"fmt"
-	"math/rand"
 )
 
-func BuildGetHello() []byte {
+func BuildGetHello(patchLoc string, ivRecv []byte, ivSend []byte) []byte {
 	// init
 	p := &util.MaplePacketWriter{}
-
-	// constants
-	ivRecv := []byte{70, 114, 122, byte(rand.Intn(256))}
-	ivSend := []byte{82, 48, 120, byte(rand.Intn(256))}
-	patchLoc := net.CalcPatchLocation()
 
 	// write packet
 	p.WriteShort(uint16(11 + 2 + len(patchLoc)))

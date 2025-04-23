@@ -6,9 +6,10 @@ import (
 )
 
 var (
-	MapleVersion    uint16 = 6 // 1.2.6
-	SubVersion      byte   = 1
-	RemoveWebCookie byte   = 1
+	MapleVersion             uint16 = 6 // 1.2.6
+	MapleVersionLittleEndian uint16 = ((MapleVersion >> 8) & 0xFF) | ((MapleVersion << 8) & 0xFF00)
+	SubVersion               byte   = 1
+	RemoveWebCookie          byte   = 1
 
 	LoginWaitingLimit       = 5
 	LoginProcessingInterval = 500 // (ms)
