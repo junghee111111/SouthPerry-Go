@@ -2,7 +2,7 @@ package enum
 
 import "fmt"
 
-type LoginRecvOp uint16
+type LoginRecvOp byte
 
 const (
 	TryLogin      LoginRecvOp = 0x01
@@ -19,6 +19,6 @@ func (o LoginRecvOp) String() string {
 	case 0x0A:
 		return "Pong"
 	default:
-		return fmt.Sprintf("Unknown(0x%X)", uint16(o))
+		return fmt.Sprintf("Unknown(0x%X)", o)
 	}
 }

@@ -13,7 +13,7 @@ package encryption
 import "log"
 
 type KmsCrypto struct {
-	Iv        []byte
+	Iv        [4]byte
 	VersionIv uint16
 }
 
@@ -42,7 +42,7 @@ var IVKeys = [256]byte{
 	0xC6, 0xE5, 0x08, 0x49,
 }
 
-func NewKmsCrypto(iv []byte, versionIV uint16) *KmsCrypto {
+func NewKmsCrypto(iv [4]byte, versionIV uint16) *KmsCrypto {
 	log.Printf(" => iv : %v, versionIv: %v", iv, versionIV)
 	return &KmsCrypto{
 		Iv: iv,
@@ -52,7 +52,7 @@ func NewKmsCrypto(iv []byte, versionIV uint16) *KmsCrypto {
 }
 
 // GetNewIv 함수는 각 클라이언트에 배정된 IV를 규칙에 따라 섞은 뒤 새로운 IV를 반환합니다.
-func GetNewIv(oldIv []byte) [4]byte {
+func GetNewIv(oldIv [4]byte) [4]byte {
 	in := [4]byte{0xf2, 0x53, 0x50, 0xc6}
 	for i := 0; i < 4; i++ {
 		ShuffleIv(oldIv[i], &in)
@@ -67,10 +67,11 @@ func ShuffleIv(inputByte byte, in *[4]byte) {
 	in[2] ^= (inputByte & 0xFF) + IVKeys[in[3]&0xFF]
 	in[3] = ((in[3] - in[0] + IVKeys[inputByte&0xFF]) & 0xFF)
 
-	ret := int(in[0]) & 0xFF
+	ret := int(in[0] & 0xFF)
 	ret |= (int(in[1]) << 8) & 0xFF00
 	ret |= (int(in[2]) << 16) & 0xFF0000
 	ret |= (int(in[3]) << 24) & 0xFF000000
+	ret = ((ret << 3) & 0xFFFFFFF8) | ((ret >> 29) & 7)
 
 	in[0] = byte(ret & 0xFF)
 	in[1] = byte((ret >> 8) & 0xFF)
@@ -78,5 +79,31 @@ func ShuffleIv(inputByte byte, in *[4]byte) {
 	in[3] = byte((ret >> 24) & 0xFF)
 
 	log.Printf(" => in: %v", in)
+
+}
+
+func UpdateIv(c *KmsCrypto) {
+	c.Iv = GetNewIv(c.Iv)
+}
+
+func Decrypt(c *KmsCrypto, b []byte) []byte {
+	ivTemp := [4]byte{
+		c.Iv[0], c.Iv[1], c.Iv[2], c.Iv[3],
+	}
+
+	UpdateIv(c)
+
+	for i := 0; i < len(b); i++ {
+		first := uint32(((b[i] & 0xFF) ^ IVKeys[ivTemp[0]&0xFF]) & 0xFF)
+		second := ((first>>1)&0x55 | ((first & 0xD5) << 1)) & 0xFF
+		final := ((second << 4) | (second >> 4)) & 0xFF
+		b[i] = byte(final)
+		ShuffleIv(b[i], &ivTemp)
+	}
+
+	return b
+}
+
+func encrypt() {
 
 }

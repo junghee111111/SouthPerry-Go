@@ -18,13 +18,13 @@ type MapleClient struct {
 	conn    net.Conn
 	kmsRecv *encryption.KmsCrypto
 	kmsSend *encryption.KmsCrypto
-	ivRecv  []byte
-	ivSend  []byte
+	ivRecv  [4]byte
+	ivSend  [4]byte
 }
 
 func NewMapleConn(conn net.Conn) *MapleClient {
-	ivRecv := []byte{70, 114, 122, byte(rand.Intn(256))}
-	ivSend := []byte{82, 48, 120, byte(rand.Intn(256))}
+	ivRecv := [4]byte{70, 114, 122, byte(rand.Intn(256))}
+	ivSend := [4]byte{82, 48, 120, byte(rand.Intn(256))}
 
 	log.Printf("IvRecv : %v IvSend : %v", ivRecv, ivSend)
 	return &MapleClient{
@@ -66,10 +66,11 @@ func HandleClient(c *MapleClient) {
 			return
 		}
 
-		opcode := binary.LittleEndian.Uint16(body[:2])
-		payload := body[2:]
+		decoded := encryption.Decrypt(c.kmsRecv, body)
+		opcode := decoded[:1]
+		payload := decoded[1:]
 
-		log.Printf("Received packet: Length=%d, Opcode=0x%04X", packetLength, opcode)
+		log.Printf("Received packet : %v", packetLength, decoded)
 		handlePacket(opcode, payload)
 	}
 }
@@ -93,7 +94,8 @@ func isPacketValid(c *MapleClient, packetHeader []byte) bool {
 	iv := c.kmsRecv.Iv
 	version := c.kmsRecv.VersionIv
 
-	return (((b[0] ^ iv[2]) & 0xFF) == byte((version>>8)&0xFF)) && (((b[1] ^ iv[3]) & 0xFF) == byte(version&0xFF))
+	return (((b[0] ^ iv[2]) & 0xFF) == byte((version>>8)&0xFF)) &&
+		(((b[1] ^ iv[3]) & 0xFF) == byte(version&0xFF))
 }
 
 func getPacketLength(packetHeader []byte) uint32 {
@@ -114,7 +116,7 @@ func accept(c *MapleClient) {
 	log.Println("New connection from", c.conn.RemoteAddr())
 
 	patchLoc := CalcPatchLocation()
-	helloPacket := packet.BuildGetHello(patchLoc, c.ivRecv, c.ivSend)
+	helloPacket := packet.BuildGetHello(patchLoc, c.ivRecv[:], c.ivSend[:])
 	SendRawPacket(c, helloPacket)
 }
 
@@ -128,9 +130,10 @@ func SendRawPacket(c *MapleClient, b []byte) {
 	log.Println("Sent packet to", c.conn.RemoteAddr())
 }
 
-func handlePacket(opcode uint16, payload []byte) {
-	switch opcode {
-	case uint16(enum.TryLogin):
+func handlePacket(opcode []byte, payload []byte) {
+	_op := opcode[0]
+	switch _op {
+	case byte(enum.TryLogin):
 		log.Println("Opcode 0x01: Client Login Request")
 		packet := util.NewPacketReader(payload)
 		id := packet.ReadAsciiString()
@@ -139,10 +142,10 @@ func handlePacket(opcode uint16, payload []byte) {
 		fmt.Printf("    => id : %s | password : %s\n", id, password)
 
 		// handleLogin(payload)
-	case uint16(enum.ChannelSelect):
+	case byte(enum.ChannelSelect):
 		log.Println("Opcode 0x04: Channel Select")
 	// sendPong(conn)
-	case uint16(enum.Pong):
+	case byte(enum.Pong):
 		log.Println("Opcode 0x10: Pong")
 	default:
 		log.Printf("Unhandled opcode: 0x%04X", opcode)
