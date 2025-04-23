@@ -4,15 +4,17 @@
  * Copyright (c) 2025 Junghee Wang
  * This File includes portions of code or design concepts derived from:
  *  - OdinMS
- *  - Like
+ *  - Lika
  * All rights and original copyrights belong to the respective authors.
  */
 
 package encryption
 
+import "log"
+
 type KmsCrypto struct {
-	iv        [4]byte
-	versionIV uint16
+	Iv        []byte
+	VersionIv uint16
 }
 
 var IVKeys = [256]byte{
@@ -41,12 +43,15 @@ var IVKeys = [256]byte{
 }
 
 func NewKmsCrypto(iv []byte, versionIV uint16) *KmsCrypto {
+	log.Printf(" => iv : %v, versionIv: %v", iv, versionIV)
 	return &KmsCrypto{
-		iv:        GetNewIv(iv),
-		versionIV: versionIV,
+		Iv: iv,
+		// little endian으로 변환
+		VersionIv: ((versionIV >> 8) & 0xFF) | ((versionIV << 8) & 0xFF00),
 	}
 }
 
+// GetNewIv 함수는 각 클라이언트에 배정된 IV를 규칙에 따라 섞은 뒤 새로운 IV를 반환합니다.
 func GetNewIv(oldIv []byte) [4]byte {
 	in := [4]byte{0xf2, 0x53, 0x50, 0xc6}
 	for i := 0; i < 4; i++ {
@@ -55,6 +60,7 @@ func GetNewIv(oldIv []byte) [4]byte {
 	return in
 }
 
+// ShuffleIv 함수는 IVKeys를 참조하여 각 클라이언트에 배정된 iv [4]byte를 섞습니다.
 func ShuffleIv(inputByte byte, in *[4]byte) {
 	in[0] += IVKeys[in[1]&0xFF] - (inputByte & 0xFF)
 	in[1] -= in[2] ^ IVKeys[inputByte&0xFF]
@@ -70,4 +76,7 @@ func ShuffleIv(inputByte byte, in *[4]byte) {
 	in[1] = byte((ret >> 8) & 0xFF)
 	in[2] = byte((ret >> 16) & 0xFF)
 	in[3] = byte((ret >> 24) & 0xFF)
+
+	log.Printf(" => in: %v", in)
+
 }

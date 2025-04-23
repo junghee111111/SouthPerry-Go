@@ -25,12 +25,14 @@ type MapleClient struct {
 func NewMapleConn(conn net.Conn) *MapleClient {
 	ivRecv := []byte{70, 114, 122, byte(rand.Intn(256))}
 	ivSend := []byte{82, 48, 120, byte(rand.Intn(256))}
+
+	log.Printf("IvRecv : %v IvSend : %v", ivRecv, ivSend)
 	return &MapleClient{
 		conn:    conn,
 		ivRecv:  ivRecv,
 		ivSend:  ivSend,
 		kmsRecv: encryption.NewKmsCrypto(ivRecv, MapleVersion),
-		kmsSend: encryption.NewKmsCrypto(ivSend, (0xFFFF - MapleVersion)),
+		kmsSend: encryption.NewKmsCrypto(ivSend, 0xFFFF-MapleVersion),
 	}
 }
 
@@ -42,14 +44,20 @@ func HandleClient(c *MapleClient) {
 
 	reader := bufio.NewReader(conn)
 	for {
-		header := make([]byte, 2)
+		header := make([]byte, 4)
 		_, err := io.ReadFull(reader, header)
 		if err != nil {
 			log.Printf("Failed to read packet length: %v", err)
 			return
 		}
-		packetLength := binary.LittleEndian.Uint16(header)
+
+		packetLength := decodePacketLength(c, header)
 		log.Println(" ::: Received packet length", packetLength)
+
+		if packetLength == 0 {
+			log.Println(" ::: Packet length is zero")
+			return
+		}
 
 		body := make([]byte, packetLength)
 		_, err = io.ReadFull(reader, body)
@@ -66,8 +74,40 @@ func HandleClient(c *MapleClient) {
 	}
 }
 
-func decodeMapleStream() {
+func decodePacketLength(c *MapleClient, stream []byte) uint32 {
+	if !isPacketValid(c, stream) {
+		log.Printf("Invalid Packet!!  : 0x%04X", stream)
+		c.conn.Close()
+		return 0
+	}
+	return getPacketLength(stream)
+}
 
+func isPacketValid(c *MapleClient, packetHeader []byte) bool {
+	// 여기선 BigEndian 으로 읽어줘야한다..
+	rawHeader := binary.BigEndian.Uint32(packetHeader[:4])
+	b := make([]byte, 2)
+	b[0] = byte((rawHeader >> (8 + 8 + 8)) & 0xFF)
+	b[1] = byte((rawHeader >> (8 + 8)) & 0xFF)
+
+	iv := c.kmsRecv.Iv
+	version := c.kmsRecv.VersionIv
+
+	return (((b[0] ^ iv[2]) & 0xFF) == byte((version>>8)&0xFF)) && (((b[1] ^ iv[3]) & 0xFF) == byte(version&0xFF))
+}
+
+func getPacketLength(packetHeader []byte) uint32 {
+	// 여기선 BigEndian 으로 읽어줘야한다..
+	rawHeader := binary.BigEndian.Uint32(packetHeader[:4])
+
+	// 00000000 10000000 10000000 00000000
+	// 00000000 00000000 00000000 10000000 ^ 00000000 10000000 10000000 00000000
+	// 00000000 10000000 10000000 10000000
+	pLength := (rawHeader >> 16) ^ (rawHeader & 0xFFFF)
+
+	// 10000000 10000000 00000000 00000000 | 00000000 00000000 10000000 10000000
+	pLength = ((pLength << 8) & 0xFF00) | ((pLength >> 8) & 0xFF)
+	return pLength
 }
 
 func accept(c *MapleClient) {
