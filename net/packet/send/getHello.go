@@ -1,4 +1,10 @@
-package packet
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 Junghee Wang
+ */
+
+package send
 
 import (
 	"SouthPerry/net/util"

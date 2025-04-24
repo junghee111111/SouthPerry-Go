@@ -77,31 +77,10 @@ func ShuffleIv(inputByte byte, in *[4]byte) {
 	in[1] = byte((ret >> 8) & 0xFF)
 	in[2] = byte((ret >> 16) & 0xFF)
 	in[3] = byte((ret >> 24) & 0xFF)
-
-	log.Printf(" => in: %v", in)
-
 }
 
 func UpdateIv(c *KmsCrypto) {
 	c.Iv = GetNewIv(c.Iv)
-}
-
-func Decrypt(c *KmsCrypto, b []byte) []byte {
-	ivTemp := [4]byte{
-		c.Iv[0], c.Iv[1], c.Iv[2], c.Iv[3],
-	}
-
-	UpdateIv(c)
-
-	for i := 0; i < len(b); i++ {
-		first := uint32(((b[i] & 0xFF) ^ IVKeys[ivTemp[0]&0xFF]) & 0xFF)
-		second := ((first>>1)&0x55 | ((first & 0xD5) << 1)) & 0xFF
-		final := ((second << 4) | (second >> 4)) & 0xFF
-		b[i] = byte(final)
-		ShuffleIv(b[i], &ivTemp)
-	}
-
-	return b
 }
 
 func encrypt() {

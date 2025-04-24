@@ -19,6 +19,6 @@ func (o LoginRecvOp) String() string {
 	case 0x0A:
 		return "Pong"
 	default:
-		return fmt.Sprintf("Unknown(0x%X)", o)
+		return fmt.Sprintf("Unknown Recv Op(0x%X)", o)
 	}
 }
