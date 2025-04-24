@@ -3,7 +3,13 @@
 **A resurrection of the classic MapleStory experience — written from scratch in pure Go.**  
 This project revives the legendary 2007-era MapleStory v1.2.6 client using a fully custom, opcode-driven TCP server.
 
-> “No Netty. No Spring. Just packets, opcodes, and pain.”
+### ‼️이 리포지토리는 개인 학습용으로만 유지되고 있습니다.
+본 리포지토리의 코드를 기반으로 실제 사설 서버를 운영하는 행위는 금지되며,
+이에 따른 모든 법적 책임은 사용자 본인에게 있습니다.
+
+### ‼️This repository is maintained strictly for personal learning purposes only.
+Operating a private server using the code from this repository is strictly prohibited.
+All legal responsibilities for any such use lie solely with the user.
 
 ---
 
