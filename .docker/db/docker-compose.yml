@@ -1,4 +1,4 @@
-version: '3.8'
+name: 'southperry-infra'
 
 services:
   mongo:
@@ -9,9 +9,13 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+      - ./initdb.d:/docker-entrypoint-initdb.d:ro
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: southperry
+    networks:
+      - southperry
 
   redis:
     image: redis:7.2
@@ -21,7 +25,14 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - southperry
 
 volumes:
   mongo_data:
   redis_data:
+
+networks:
+  southperry:
+    name: southperry
+    driver: bridge

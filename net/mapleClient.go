@@ -1,10 +1,10 @@
 package net
 
 import (
+	"SouthPerry/net/encryption"
 	"SouthPerry/net/enum"
 	"SouthPerry/net/packet/recv"
 	"SouthPerry/net/packet/send"
-	"SouthPerry/net/util/encryption"
 	"bufio"
 	"io"
 	"log"
@@ -14,8 +14,8 @@ import (
 
 type MapleClient struct {
 	conn    net.Conn
-	KmsRecv *encryption.KmsCrypto
-	KmsSend *encryption.KmsCrypto
+	KmsRecv *encryption.CryptoManager
+	KmsSend *encryption.CryptoManager
 	ivRecv  [4]byte
 	ivSend  [4]byte
 }
@@ -29,8 +29,8 @@ func NewMapleConn(conn net.Conn) *MapleClient {
 		conn:    conn,
 		ivRecv:  ivRecv,
 		ivSend:  ivSend,
-		KmsRecv: encryption.NewKmsCrypto(ivRecv, MapleVersion),
-		KmsSend: encryption.NewKmsCrypto(ivSend, 0xFFFF-MapleVersion),
+		KmsRecv: encryption.NewCryptoManager(ivRecv, MapleVersion),
+		KmsSend: encryption.NewCryptoManager(ivSend, 0xFFFF-MapleVersion),
 	}
 }
 
@@ -38,7 +38,7 @@ func HandleClient(c *MapleClient) {
 	conn := c.conn
 	defer conn.Close()
 
-	accept(c)
+	acceptClient(c)
 
 	reader := bufio.NewReader(conn)
 	for {
@@ -53,7 +53,6 @@ func HandleClient(c *MapleClient) {
 		log.Println(" ::: Received packet length", packetLength)
 
 		if packetLength == 0 {
-			conn.Close()
 			log.Println(" ::: Packet length is zero")
 			return
 		}
@@ -74,7 +73,7 @@ func HandleClient(c *MapleClient) {
 	}
 }
 
-func accept(c *MapleClient) {
+func acceptClient(c *MapleClient) {
 	log.Println("New connection from", c.conn.RemoteAddr())
 
 	patchLoc := CalcPatchLocation()

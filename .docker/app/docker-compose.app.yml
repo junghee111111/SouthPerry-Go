@@ -1,0 +1,23 @@
+name: 'southperry-app'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: southperry_app
+    restart: unless-stopped
+    ports:
+      - "8484:8484"
+    environment:
+      MONGO_URI: mongodb://southperry:southperry@southperry_mongo:27017/southperry
+      REDIS_ADDR: southperry_redis:6379
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - southperry
+
+networks:
+  southperry:
+    external: true

@@ -6,7 +6,7 @@
 
 package encryption
 
-func Encrypt(cr *KmsCrypto, b []byte) []byte {
+func Encrypt(cr *CryptoManager, b []byte) []byte {
 	header := buildPacketHeader(cr.Iv, cr.VersionIv, len(b))
 
 	ivTemp := [4]byte{

@@ -11,7 +11,7 @@ import (
 	"log"
 )
 
-func Decrypt(cr *KmsCrypto, b []byte) []byte {
+func Decrypt(cr *CryptoManager, b []byte) []byte {
 	ivTemp := [4]byte{
 		cr.Iv[0], cr.Iv[1], cr.Iv[2], cr.Iv[3],
 	}

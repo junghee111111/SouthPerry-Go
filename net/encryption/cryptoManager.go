@@ -12,7 +12,7 @@ package encryption
 
 import "log"
 
-type KmsCrypto struct {
+type CryptoManager struct {
 	Iv        [4]byte
 	VersionIv uint16
 }
@@ -42,9 +42,9 @@ var IVKeys = [256]byte{
 	0xC6, 0xE5, 0x08, 0x49,
 }
 
-func NewKmsCrypto(iv [4]byte, versionIV uint16) *KmsCrypto {
+func NewCryptoManager(iv [4]byte, versionIV uint16) *CryptoManager {
 	log.Printf(" => iv : %v, versionIv: %v", iv, versionIV)
-	return &KmsCrypto{
+	return &CryptoManager{
 		Iv: iv,
 		// little endian으로 변환
 		VersionIv: ((versionIV >> 8) & 0xFF) | ((versionIV << 8) & 0xFF00),
@@ -79,10 +79,6 @@ func ShuffleIv(inputByte byte, in *[4]byte) {
 	in[3] = byte((ret >> 24) & 0xFF)
 }
 
-func UpdateIv(c *KmsCrypto) {
+func UpdateIv(c *CryptoManager) {
 	c.Iv = GetNewIv(c.Iv)
-}
-
-func encrypt() {
-
 }
