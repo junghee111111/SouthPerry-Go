@@ -11,3 +11,12 @@ This project revives the legendary 2007-era MapleStory v1.2.6 client using a ful
 
 - **Client Version:** KMS 1.2.6
 - **Tested With:** Original 1.2.6 KMS client (manually patched to connect to `127.0.0.1:8484`)
+
+## 🎯 How to start?
+First,
+
+> docker compose -f ./.docker/db/docker-compose.yml up -d
+
+Second,
+
+> docker compose -f ./.docker/app/docker-compose.app.yml up --build
