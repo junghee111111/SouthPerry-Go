@@ -1,12 +1,19 @@
 package main
 
 import (
+	"SouthPerry/db"
 	mapleNet "SouthPerry/net"
 	"log"
 	"net"
+	"os"
 )
 
+var mongoURI = os.Getenv("MONGO_URI")
+var mongoDbName = os.Getenv("MONGO_DB_NAME")
+
 func main() {
+	db.Init(mongoURI, mongoDbName)
+
 	ln, err := net.Listen("tcp", ":8484")
 	if err != nil {
 		log.Fatalf("Failed to bind due to %v", err)
