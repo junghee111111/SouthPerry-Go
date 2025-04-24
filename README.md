@@ -19,10 +19,8 @@ All legal responsibilities for any such use lie solely with the user.
 - **Tested With:** Original 1.2.6 KMS client (manually patched to connect to `127.0.0.1:8484`)
 
 ## 🎯 How to start?
-First,
-
-> docker compose -f ./.docker/db/docker-compose.yml up -d
-
-Second,
-
-> docker compose -f ./.docker/app/docker-compose.app.yml up --build
+```aiignore
+$ docker compose -f ./.docker/db/docker-compose.yml up -d
+$ docker compose -f ./.docker/app/docker-compose.app.yml up --build
+```
+- **Initial MongoDB username/password** : southperry/southperry
