@@ -8,14 +8,13 @@ package recv
 
 import (
 	"SouthPerry/net/util"
-	"fmt"
 )
 
-func ParseTryLogin(payload []byte) {
+func ParseTryLogin(payload []byte) (email string, password string) {
 	// init
 	packet := util.NewPacketReader(payload)
-	id := packet.ReadAsciiString()
-	password := packet.ReadAsciiString()
+	iEmail := packet.ReadAsciiString()
+	iPwd := packet.ReadAsciiString()
 
-	fmt.Printf("ID: %s\nPWD:%s\n", id, password)
+	return iEmail, iPwd
 }

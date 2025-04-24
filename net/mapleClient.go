@@ -1,6 +1,7 @@
 package net
 
 import (
+	"SouthPerry/db/service"
 	"SouthPerry/net/encryption"
 	"SouthPerry/net/enum"
 	"SouthPerry/net/packet/recv"
@@ -105,9 +106,11 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 	_op := enum.LoginRecvOp(opcode[0])
 	switch _op {
 	case enum.TryLogin:
-		log.Println("Opcode 0x01: Client Login Request")
-		recv.ParseTryLogin(payload)
-		packet := send.BuildGetLoginResult(3)
+		email, password := recv.ParseTryLogin(payload)
+		//service.CreateAccount(email, password)
+
+		code := service.CheckAccount(email, password)
+		packet := send.BuildGetLoginResult(code)
 		SendPacket(c, packet)
 	case enum.ChannelSelect:
 		log.Println("Opcode 0x04: Channel Select")

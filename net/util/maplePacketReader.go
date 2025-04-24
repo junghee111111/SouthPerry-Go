@@ -6,7 +6,6 @@ import (
 	"golang.org/x/text/encoding/korean"
 	"golang.org/x/text/transform"
 	"io"
-	"log"
 )
 
 type MaplePacketReader struct {
@@ -38,7 +37,7 @@ func (r *MaplePacketReader) ReadAsciiString() string {
 	length := r.ReadShort()
 	b := make([]byte, length)
 
-	log.Printf(" ==> ReadAsciiString for length : %d", length)
+	// log.Printf(" ==> ReadAsciiString for length : %d", length)
 
 	decoder := korean.EUCKR.NewDecoder()
 

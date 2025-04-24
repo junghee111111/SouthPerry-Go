@@ -3,16 +3,21 @@ package main
 import (
 	"SouthPerry/db"
 	mapleNet "SouthPerry/net"
+	"context"
 	"log"
 	"net"
 	"os"
+	"time"
 )
 
 var mongoURI = os.Getenv("MONGO_URI")
 var mongoDbName = os.Getenv("MONGO_DB_NAME")
 
 func main() {
-	db.Init(mongoURI, mongoDbName)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	db.ConnectDB(ctx, mongoURI, mongoDbName)
 
 	ln, err := net.Listen("tcp", ":8484")
 	if err != nil {
