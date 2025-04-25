@@ -7,20 +7,11 @@
 package service
 
 import (
+	"SouthPerry/db/enum"
 	"SouthPerry/db/repository"
 	"context"
 	"golang.org/x/crypto/bcrypt"
 	"time"
-)
-
-const (
-	BAN_ACCOUNT         = 3
-	WRONG_PASSWORD      = 4
-	WRONG_ID            = 5
-	SYSTEM_ERROR        = 6
-	ALREADY_LOGGEDIN    = 7
-	SERVICE_UNAVAILABLE = 10
-	OLDER20             = 11
 )
 
 func hashPassword(password string) (string, error) {
@@ -41,19 +32,19 @@ func CreateAccount(email string, password string) {
 	repository.InsertAccount(ctx, email, hashedPassword)
 }
 
-func CheckAccount(email string, password string) (result uint32) {
+func CheckAccount(email string, password string) (result enum.AccountRespCode) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	account, err := repository.FindAccountByEmail(ctx, email)
 
 	if err != nil {
-		return WRONG_ID
+		return enum.CheckAccountResp.WrongID
 	}
 
 	if checkPasswordHash(password, account.PasswordHash) {
-		return OLDER20
+		return enum.CheckAccountResp.Success
 	} else {
-		return WRONG_PASSWORD
+		return enum.CheckAccountResp.WrongPassword
 	}
 }

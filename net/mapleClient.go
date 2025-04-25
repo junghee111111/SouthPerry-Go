@@ -1,6 +1,7 @@
 package net
 
 import (
+	dbEnum "SouthPerry/db/enum"
 	"SouthPerry/db/service"
 	"SouthPerry/net/encryption"
 	"SouthPerry/net/enum"
@@ -110,8 +111,14 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 		//service.CreateAccount(email, password)
 
 		code := service.CheckAccount(email, password)
-		packet := send.BuildGetLoginResult(code)
-		SendPacket(c, packet)
+		if code != dbEnum.CheckAccountResp.Success {
+			// Login Error
+			packet := send.BuildGetLoginResult(uint32(code))
+			SendPacket(c, packet)
+		} else {
+			// Login Success
+
+		}
 	case enum.ChannelSelect:
 		log.Println("Opcode 0x04: Channel Select")
 	// sendPong(conn)
