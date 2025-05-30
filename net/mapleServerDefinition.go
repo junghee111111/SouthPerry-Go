@@ -19,7 +19,7 @@ var (
 	ClientKey  string = randomKey(16)
 	DecoderKey string = randomKey(16)
 
-	WorldNum int = 10
+	WorldNum int = 20
 )
 
 func randomKey(n int) string {

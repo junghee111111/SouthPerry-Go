@@ -36,7 +36,7 @@ func BuildGetAuthSuccess(acc model.Account) []byte {
 	p.WriteInt(3) // 뭔지 모름
 	p.WriteByte(0)
 	p.WriteByte(0)
-	p.WriteByte(0)                      // chat banned?
+	p.WriteByte(0)                      // chat banned
 	p.WriteLong(time.Now().UnixMilli()) // chat banned time
 	p.WriteAsciiString("")              // ?
 	p.WriteAsciiString("")              // ?

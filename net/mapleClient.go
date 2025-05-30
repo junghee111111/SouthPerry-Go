@@ -15,11 +15,13 @@ import (
 )
 
 type MapleClient struct {
-	conn    net.Conn
-	KmsRecv *encryption.CryptoManager
-	KmsSend *encryption.CryptoManager
-	ivRecv  [4]byte
-	ivSend  [4]byte
+	conn           net.Conn
+	KmsRecv        *encryption.CryptoManager
+	KmsSend        *encryption.CryptoManager
+	currentWorld   byte
+	currentChannel byte
+	ivRecv         [4]byte
+	ivSend         [4]byte
 }
 
 func NewMapleConn(conn net.Conn) *MapleClient {
@@ -124,6 +126,10 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 		}
 	case enum.ChannelSelect:
 		log.Println("Opcode 0x04: Channel Select")
+		worldId, channelId := recv.ParseChannelSelect(payload)
+		c.currentWorld = worldId
+		c.currentChannel = channelId
+		SendPacket(c, send.BuildGetWorldCharList())
 	// sendPong(conn)
 	case enum.Pong:
 		log.Println("Opcode 0x10: Pong")

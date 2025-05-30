@@ -13,9 +13,32 @@ import (
 	"fmt"
 )
 
+var worldKoreanList = []string{
+	"스카니아",
+	"베라",
+	"브로아",
+	"카이니",
+	"제니스",
+	"크로아",
+	"아케니아",
+	"마르디아",
+	"플라나",
+	"스티어스",
+	"벨로칸",
+	"데메토스",
+	"옐론드",
+	"카스티아",
+	"엘니도",
+	"윈디아",
+	"쥬디스",
+	"카디아",
+	"갈리시아",
+	"칼루나",
+}
+
 func BuildGetWorldList(worldId int) []byte {
 	p := &util.MaplePacketWriter{}
-	tmpWorld := world.NewWorld(fmt.Sprintf("스카니아%d", worldId), 1, fmt.Sprintf("이벤트 메세지!"))
+	tmpWorld := world.NewWorld(fmt.Sprintf("%s", worldKoreanList[worldId]), 1, fmt.Sprintf("이벤트 메세지!"))
 	channelSize := 20
 
 	p.WriteByte(enum.WorldList.Byte())
@@ -40,7 +63,7 @@ func BuildGetWorldList(worldId int) []byte {
 	for i := 1; i <= channelSize; i++ {
 		tmpChannelName := fmt.Sprintf("%s-%d", tmpWorld.Name, i)
 		if i == 2 {
-			tmpChannelName = fmt.Sprintf("%-20세이상", tmpWorld.Name)
+			tmpChannelName = fmt.Sprintf("%s-20세이상", tmpWorld.Name)
 		}
 
 		p.WriteAsciiString(tmpChannelName)
