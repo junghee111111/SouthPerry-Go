@@ -90,7 +90,7 @@ func SendRawPacket(c *MapleClient, b []byte) {
 		log.Printf("Failed to send raw packet: %v", err)
 		return
 	}
-	log.Println("Send raw packet to", c.conn.RemoteAddr())
+	log.Println("Send raw packet to", c.conn.RemoteAddr(), len(b))
 }
 
 func SendPacket(c *MapleClient, b []byte) {
@@ -100,7 +100,7 @@ func SendPacket(c *MapleClient, b []byte) {
 		log.Printf("Failed to send encrypted packet: %v", err)
 		return
 	}
-	log.Println("Send encrypted packet to", c.conn.RemoteAddr())
+	log.Println("Send encrypted packet to", c.conn.RemoteAddr(), len(b))
 }
 
 func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
@@ -110,14 +110,17 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 		email, password := recv.ParseTryLogin(payload)
 		//service.CreateAccount(email, password)
 
-		code := service.CheckAccount(email, password)
-		if code != dbEnum.CheckAccountResp.Success {
+		respCode, account := service.CheckAccount(email, password)
+		if respCode != dbEnum.CheckAccountResp.Success {
 			// Login Error
-			packet := send.BuildGetLoginResult(uint32(code))
-			SendPacket(c, packet)
+			SendPacket(c, send.BuildGetLoginResult(uint32(respCode)))
 		} else {
 			// Login Success
-
+			SendPacket(c, send.BuildGetAuthSuccess(account))
+			for i := 0; i < WorldNum; i++ {
+				SendPacket(c, send.BuildGetWorldList(i))
+			}
+			SendPacket(c, send.BuildGetWorldListEnd())
 		}
 	case enum.ChannelSelect:
 		log.Println("Opcode 0x04: Channel Select")

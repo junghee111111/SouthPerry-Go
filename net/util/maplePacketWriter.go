@@ -23,6 +23,10 @@ func (p *MaplePacketWriter) WriteInt(v uint32) {
 	binary.Write(&p.buf, binary.LittleEndian, v)
 }
 
+func (p *MaplePacketWriter) WriteLong(v int64) {
+	binary.Write(&p.buf, binary.LittleEndian, v)
+}
+
 func (p *MaplePacketWriter) Write(data []byte) {
 	p.buf.Write(data)
 }

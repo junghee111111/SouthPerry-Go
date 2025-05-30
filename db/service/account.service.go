@@ -8,6 +8,7 @@ package service
 
 import (
 	"SouthPerry/db/enum"
+	"SouthPerry/db/model"
 	"SouthPerry/db/repository"
 	"context"
 	"golang.org/x/crypto/bcrypt"
@@ -32,19 +33,19 @@ func CreateAccount(email string, password string) {
 	repository.InsertAccount(ctx, email, hashedPassword)
 }
 
-func CheckAccount(email string, password string) (result enum.AccountRespCode) {
+func CheckAccount(email string, password string) (result enum.AccountRespCode, account model.Account) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	account, err := repository.FindAccountByEmail(ctx, email)
 
 	if err != nil {
-		return enum.CheckAccountResp.WrongID
+		return enum.CheckAccountResp.WrongID, model.Account{}
 	}
 
 	if checkPasswordHash(password, account.PasswordHash) {
-		return enum.CheckAccountResp.Success
+		return enum.CheckAccountResp.Success, account
 	} else {
-		return enum.CheckAccountResp.WrongPassword
+		return enum.CheckAccountResp.WrongPassword, model.Account{}
 	}
 }
