@@ -45,3 +45,12 @@ func FindAccountByEmail(ctx context.Context, email string) (model.Account, error
 
 	return storedAccount, nil
 }
+
+func IsNameUsed(ctx context.Context, name string) bool {
+	foundCharacter := db.DB.Collection("characters")
+	var storeCharacter model.Character
+	err := foundCharacter.FindOne(ctx, bson.M{
+		"name": name,
+	}).Decode(&storeCharacter)
+	return err == nil
+}

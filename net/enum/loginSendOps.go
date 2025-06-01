@@ -11,10 +11,11 @@ import "fmt"
 type LoginSendOp byte
 
 const (
-	LoginResult                 LoginSendOp = 0x01
-	WorldList                   LoginSendOp = 0x03
-	WorldCharList               LoginSendOp = 0x04
-	CheckNameResponse           LoginSendOp = 0x06
+	LoginResult       LoginSendOp = 0x01
+	WorldList         LoginSendOp = 0x03
+	WorldCharList     LoginSendOp = 0x04
+	CheckNameResponse LoginSendOp = 0x06
+
 	Ping                        LoginSendOp = 0x0A
 	GameGuardUpdate             LoginSendOp = 0x0F
 	PersonIdentifyResult        LoginSendOp = 0x10

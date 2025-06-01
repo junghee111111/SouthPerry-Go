@@ -49,3 +49,10 @@ func CheckAccount(email string, password string) (result enum.AccountRespCode, a
 		return enum.CheckAccountResp.WrongPassword, model.Account{}
 	}
 }
+
+func CheckCharacterName(name string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	return repository.IsNameUsed(ctx, name)
+}

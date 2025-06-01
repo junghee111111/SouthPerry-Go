@@ -72,7 +72,7 @@ func HandleClient(c *MapleClient) {
 		opcode := decoded[:1]
 		payload := decoded[1:]
 
-		log.Printf("Received packet : %v", packetLength, decoded)
+		log.Printf("Received packet [len:%d] %v", packetLength, decoded)
 		handlePacket(c, opcode, payload)
 	}
 }
@@ -107,6 +107,7 @@ func SendPacket(c *MapleClient, b []byte) {
 
 func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 	_op := enum.LoginRecvOp(opcode[0])
+	log.Printf("Opcode [%s] %v \n", _op.String(), opcode)
 	switch _op {
 	case enum.TryLogin:
 		email, password := recv.ParseTryLogin(payload)
@@ -125,15 +126,18 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 			SendPacket(c, send.BuildGetWorldListEnd())
 		}
 	case enum.ChannelSelect:
-		log.Println("Opcode 0x04: Channel Select")
+
 		worldId, channelId := recv.ParseChannelSelect(payload)
 		c.currentWorld = worldId
 		c.currentChannel = channelId
 		SendPacket(c, send.BuildGetWorldCharList())
-	// sendPong(conn)
+	case enum.RequestCharNameCheck:
+		name := recv.ParseRequestCharNameCheck(payload)
+		p := send.BuildResponseCharName(name, service.CheckCharacterName(name))
+		SendPacket(c, p)
 	case enum.Pong:
-		log.Println("Opcode 0x10: Pong")
+
 	default:
-		log.Printf("Unhandled opcode: 0x%04X", opcode)
+		log.Printf("Unhandled opcode: [%s] 0x%04X", _op.String(), opcode)
 	}
 }
