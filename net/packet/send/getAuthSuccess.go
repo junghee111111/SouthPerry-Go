@@ -24,7 +24,7 @@ func BuildGetAuthSuccess(acc model.Account) []byte {
 	p.WriteByte(0)
 
 	// account info
-	p.WriteInt(uint32(acc.AccId))
+	p.WriteUint32(uint32(acc.AccId))
 	if acc.Sex == false {
 		p.WriteByte(0)
 	} else {
@@ -33,7 +33,7 @@ func BuildGetAuthSuccess(acc model.Account) []byte {
 	p.WriteByte(0)                // is gm
 	p.WriteAsciiString(acc.Email) // email
 
-	p.WriteInt(3) // 뭔지 모름
+	p.WriteUint32(3) // 뭔지 모름
 	p.WriteByte(0)
 	p.WriteByte(0)
 	p.WriteByte(0)                      // chat banned

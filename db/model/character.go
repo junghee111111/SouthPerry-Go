@@ -12,6 +12,7 @@ import (
 
 type Character struct {
 	Id        primitive.ObjectID `bson:"_id,omitempty"`
+	CharId    int                `bson:"charId"`
 	AccountId int                `bson:"accountId"`
 	Name      string             `bson:"name"`
 

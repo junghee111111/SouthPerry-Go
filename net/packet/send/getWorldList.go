@@ -43,7 +43,7 @@ func BuildGetWorldList(worldId int) []byte {
 
 	p.WriteByte(enum.WorldList.Byte())
 
-	p.WriteInt(uint32(worldId))
+	p.WriteUint32(uint32(worldId))
 
 	// 아래부터가 실제로 알아낸 1.2.6 버전의 패킷 구조입니다.
 	// 이 버전은 핫/이벤트 플래그, 서버명 페이로드 지원하지 않습니다.
@@ -67,7 +67,7 @@ func BuildGetWorldList(worldId int) []byte {
 		}
 
 		p.WriteAsciiString(tmpChannelName)
-		p.WriteInt(700) // current channel player count (0~1000)
+		p.WriteUint32(700) // current channel player count (0~1000)
 		p.WriteByte(byte(worldId))
 		p.WriteShort(uint16(i))
 	}
@@ -80,7 +80,7 @@ func BuildGetWorldList(worldId int) []byte {
 
 	// 메세지가 없을 때,
 	//p.WriteShort(uint16(0))
-	//p.WriteInt(uint32(0))
+	//p.WriteUint32(uint32(0))
 
 	fmt.Printf("send getServerList : % X \n", p)
 
@@ -125,7 +125,7 @@ func BuildGetWorldList(worldId int) []byte {
 			tmpChannelName = "20세이상"
 		}
 		p.WriteAsciiString(tmpChannelName)
-		p.WriteInt(1200) // channel load
+		p.WriteUint32(1200) // channel load
 		p.WriteByte(byte(worldId))
 		p.WriteByte(byte(i)) // channel no.
 		p.WriteByte(0)

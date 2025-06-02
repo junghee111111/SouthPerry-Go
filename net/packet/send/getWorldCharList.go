@@ -19,7 +19,7 @@ func BuildGetWorldCharList() []byte {
 	// write packet
 	p.WriteByte(enum.WorldCharList.Byte())
 	p.WriteByte(0)
-	p.WriteInt(0)
+	p.WriteUint32(0)
 	p.WriteByte(0)
 	p.WriteByte(0)
 	p.WriteByte(0)

@@ -22,6 +22,7 @@ func CreateCharacter(accId int, c *model.Character) {
 	}
 
 	c.AccountId = accId
+	c.CharId = 1
 
 	repository.InsertCharacter(ctx, c)
 }

@@ -19,7 +19,11 @@ func (p *MaplePacketWriter) WriteByte(v byte) {
 	p.buf.WriteByte(v)
 }
 
-func (p *MaplePacketWriter) WriteInt(v uint32) {
+func (p *MaplePacketWriter) WriteUint32(v uint32) {
+	binary.Write(&p.buf, binary.LittleEndian, v)
+}
+
+func (p *MaplePacketWriter) WriteInt(v int) {
 	binary.Write(&p.buf, binary.LittleEndian, v)
 }
 

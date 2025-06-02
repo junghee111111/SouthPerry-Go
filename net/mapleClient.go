@@ -140,7 +140,8 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 	case enum.RequestCreateChar:
 		newCharacter := recv.ParseRequestCreateChar(payload)
 		service.CreateCharacter(c.account.AccId, &newCharacter)
-		send.BuildResponseCreateChar(&newCharacter)
+
+		SendPacket(c, send.BuildResponseCreateChar(&newCharacter))
 	case enum.Pong:
 
 	case enum.LoginScreenTransition:

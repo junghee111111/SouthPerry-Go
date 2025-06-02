@@ -19,7 +19,7 @@ func BuildGetLoginResult(result uint32) []byte {
 
 	// write packet
 	p.WriteByte(enum.LoginResult.Byte())
-	p.WriteInt(result)
+	p.WriteUint32(result)
 	p.WriteShort(0) // what is this??
 	fmt.Printf("send GetLoginResult : % X\n", p)
 
