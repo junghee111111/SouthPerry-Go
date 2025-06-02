@@ -15,6 +15,7 @@ const (
 	WorldList         LoginSendOp = 0x03
 	WorldCharList     LoginSendOp = 0x04
 	CheckNameResponse LoginSendOp = 0x06
+	AddNewCharacter   LoginSendOp = 0x07
 
 	Ping                        LoginSendOp = 0x0A
 	GameGuardUpdate             LoginSendOp = 0x0F
@@ -28,8 +29,18 @@ func (o LoginSendOp) String() string {
 		return "LoginResult"
 	case 0x03:
 		return "WorldList"
+	case 0x04:
+		return "WorldCharList"
+	case 0x06:
+		return "CheckNameResponse"
+	case 0x07:
+		return "AddNewCharacter"
+	case 0x0A:
+		return "Ping"
+	case 0x0F:
+		return "GameGuardUpdate"
 	default:
-		return fmt.Sprintf("Unknown Send Op(0x%X)", o)
+		return fmt.Sprintf("Unknown(0x%X)", o)
 	}
 }
 

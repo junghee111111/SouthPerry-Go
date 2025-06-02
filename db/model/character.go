@@ -12,6 +12,21 @@ import (
 
 type Character struct {
 	Id        primitive.ObjectID `bson:"_id,omitempty"`
-	accountId int                `bson:"accountId"`
+	AccountId int                `bson:"accountId"`
 	Name      string             `bson:"name"`
+
+	Face   int `bson:"face"`
+	Hair   int `bson:"hair"`
+	Top    int `bson:"top"`
+	Bottom int `bson:"bottom"`
+	Shoes  int `bson:"shoes"`
+	Weapon int `bson:"weapon"`
+
+	Str uint16 `bson:"str"`
+	Dex uint16 `bson:"dex"`
+	Int uint16 `bson:"int"`
+	Luk uint16 `bson:"luk"`
+
+	Level int `bson:"level" default:"1"`
+	Job   int `bson:"job" default:"0"`
 }

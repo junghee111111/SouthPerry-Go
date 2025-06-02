@@ -2,6 +2,7 @@ package net
 
 import (
 	dbEnum "SouthPerry/db/enum"
+	"SouthPerry/db/model"
 	"SouthPerry/db/service"
 	"SouthPerry/net/encryption"
 	"SouthPerry/net/enum"
@@ -22,6 +23,7 @@ type MapleClient struct {
 	currentChannel byte
 	ivRecv         [4]byte
 	ivSend         [4]byte
+	account        *model.Account
 }
 
 func NewMapleConn(conn net.Conn) *MapleClient {
@@ -54,7 +56,7 @@ func HandleClient(c *MapleClient) {
 		}
 
 		packetLength := encryption.DecodePacketLength(c.KmsRecv.Iv[:], c.KmsRecv.VersionIv, header)
-		log.Println(" ::: Received packet length", packetLength)
+		// log.Println(" ::: Received packet length", packetLength)
 
 		if packetLength == 0 {
 			log.Println(" ::: Packet length is zero")
@@ -107,7 +109,7 @@ func SendPacket(c *MapleClient, b []byte) {
 
 func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 	_op := enum.LoginRecvOp(opcode[0])
-	log.Printf("Opcode [%s] %v \n", _op.String(), opcode)
+	// log.Printf("Opcode [%s] %v \n", _op.String(), opcode)
 	switch _op {
 	case enum.TryLogin:
 		email, password := recv.ParseTryLogin(payload)
@@ -119,6 +121,7 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 			SendPacket(c, send.BuildGetLoginResult(uint32(respCode)))
 		} else {
 			// Login Success
+			c.account = &account
 			SendPacket(c, send.BuildGetAuthSuccess(account))
 			for i := 0; i < WorldNum; i++ {
 				SendPacket(c, send.BuildGetWorldList(i))
@@ -126,7 +129,6 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 			SendPacket(c, send.BuildGetWorldListEnd())
 		}
 	case enum.ChannelSelect:
-
 		worldId, channelId := recv.ParseChannelSelect(payload)
 		c.currentWorld = worldId
 		c.currentChannel = channelId
@@ -135,9 +137,16 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 		name := recv.ParseRequestCharNameCheck(payload)
 		p := send.BuildResponseCharName(name, service.CheckCharacterName(name))
 		SendPacket(c, p)
+	case enum.RequestCreateChar:
+		newCharacter := recv.ParseRequestCreateChar(payload)
+		service.CreateCharacter(c.account.AccId, &newCharacter)
+		send.BuildResponseCreateChar(&newCharacter)
 	case enum.Pong:
 
+	case enum.LoginScreenTransition:
+		// player login/world/channel screen changed.
+		// it works like ping-pong
 	default:
-		log.Printf("Unhandled opcode: [%s] 0x%04X", _op.String(), opcode)
+		log.Printf("Unhandled opcode: [%s] 0x%02X", _op.String(), opcode)
 	}
 }
