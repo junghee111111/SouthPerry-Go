@@ -21,10 +21,10 @@ func BuildResponseCreateChar(c *model.Character) []byte {
 
 	// if worked, value is 1, if errored, value is 0
 	// TODO: determine when the value is 0
-	p.WriteByte(0)
+	p.WriteByte(1)
 
 	// character info
-	p.WriteInt(c.CharId)
+	p.WriteInt(int(c.ID))
 	p.WriteAsciiString(c.Name)
 	p.WriteByte(1) // gender
 	p.WriteByte(1) // skin color
@@ -67,6 +67,16 @@ func BuildResponseCreateChar(c *model.Character) []byte {
 	p.WriteInt(c.Face) // face
 	p.WriteByte(0)     // mega?
 	p.WriteInt(c.Hair)
+
+	// equips
+	p.WriteByte(255)
+
+	// masked equips
+	p.WriteByte(255)
+
+	// weapon
+	p.WriteInt(0)
+	p.WriteInt(0)
 
 	// ranking
 	if c.Level >= 30 {

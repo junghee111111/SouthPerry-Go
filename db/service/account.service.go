@@ -10,9 +10,7 @@ import (
 	"SouthPerry/db/enum"
 	"SouthPerry/db/model"
 	"SouthPerry/db/repository"
-	"context"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 func hashPassword(password string) (string, error) {
@@ -26,18 +24,12 @@ func checkPasswordHash(password, hash string) bool {
 }
 
 func CreateAccount(email string, password string) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
 	hashedPassword, _ := hashPassword(password)
-	repository.InsertAccount(ctx, email, hashedPassword)
+	repository.InsertAccount(email, hashedPassword)
 }
 
 func CheckAccount(email string, password string) (result enum.AccountRespCode, account model.Account) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	account, err := repository.FindAccountByEmail(ctx, email)
+	account, err := repository.FindAccountByEmail(email)
 
 	if err != nil {
 		return enum.CheckAccountResp.WrongID, model.Account{}
@@ -51,8 +43,5 @@ func CheckAccount(email string, password string) (result enum.AccountRespCode, a
 }
 
 func CheckCharacterName(name string) bool {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	return repository.IsNameUsed(ctx, name)
+	return repository.IsNameUsed(name)
 }

@@ -28,9 +28,26 @@ services:
     networks:
       - southperry
 
+  mariadb:
+    image: mariadb:11.0
+    container_name: southperry_mariadb
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: southperry
+      MARIADB_DATABASE: southperry
+      MARIADB_USER: southperry
+      MARIADB_PASSWORD: southperry
+    networks:
+      - southperry
+
 volumes:
   mongo_data:
   redis_data:
+  mariadb_data:
 
 networks:
   southperry:

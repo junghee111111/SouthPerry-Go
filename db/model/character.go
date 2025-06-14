@@ -6,28 +6,32 @@
 
 package model
 
-import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
-)
+import "gorm.io/gorm"
 
 type Character struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty"`
-	CharId    int                `bson:"charId"`
-	AccountId int                `bson:"accountId"`
-	Name      string             `bson:"name"`
+	gorm.Model
+	AccountID uint
+	Name      string `gorm:"unique;uniqueIndex:idx_name"`
 
-	Face   int `bson:"face"`
-	Hair   int `bson:"hair"`
-	Top    int `bson:"top"`
-	Bottom int `bson:"bottom"`
-	Shoes  int `bson:"shoes"`
-	Weapon int `bson:"weapon"`
+	Face   int
+	Hair   int
+	Top    int
+	Bottom int
+	Shoes  int
+	Weapon int
 
-	Str uint16 `bson:"str"`
-	Dex uint16 `bson:"dex"`
-	Int uint16 `bson:"int"`
-	Luk uint16 `bson:"luk"`
+	Str uint16 `gorm:"default:4"`
+	Dex uint16 `gorm:"default:4"`
+	Int uint16 `gorm:"default:4"`
+	Luk uint16 `gorm:"default:4"`
 
-	Level int `bson:"level" default:"1"`
-	Job   int `bson:"job" default:"0"`
+	MaxHp uint16 `gorm:"default:50"`
+	MaxMp uint16 `gorm:"default:25"`
+	Hp    uint16 `gorm:"default:50"`
+	Mp    uint16 `gorm:"default:25"`
+	Exp   uint32 `gorm:"default:0"`
+
+	Level int `gorm:"default:1"`
+	Job   int `gorm:"default:0"`
+	Map   int `gorm:"default:1"`
 }

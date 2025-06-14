@@ -9,18 +9,29 @@ package repository
 import (
 	"SouthPerry/db"
 	"SouthPerry/db/model"
-	"context"
 	"log"
 )
 
-func InsertCharacter(ctx context.Context, c *model.Character) {
-	cAccount := db.DB.Collection("characters")
-	_, err := cAccount.InsertOne(ctx, &c)
+func InsertCharacter(c *model.Character) {
+	newCharacter := c
+	result := db.MariaDB.Create(&newCharacter)
 
-	if err != nil {
+	if result.Error != nil {
 		log.Println("InsertCharacter Error!")
-		log.Printf("  ==> %v\n", err)
+		log.Printf("  ==> %v\n", result.Error)
 		return
 	}
 
+}
+
+func IsNameUsed(name string) bool {
+	result := db.MariaDB.Where("name = ?", name).First(&model.Character{})
+
+	if result.Error != nil {
+		log.Println("IsNameUsed Error!", name)
+		log.Printf("  ==> %v\n", result.Error)
+		return false
+	}
+
+	return true
 }

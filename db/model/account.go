@@ -7,21 +7,19 @@
 package model
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"gorm.io/gorm"
 	"time"
 )
 
 type Account struct {
-	Id           primitive.ObjectID `bson:"_id,omitempty"`
-	AccId        int                `bson:"accId"`
-	Email        string             `bson:"email"`
-	PasswordHash string             `bson:"passwordHash"`
-	Sex          bool               `bson:"sex"`
-	Birthday     time.Time          `bson:"birthday"`
-	IsBanned     bool               `bson:"isBanned"`
-	IsLoggedIn   bool               `bson:"isLoggedIn"`
-	CreatedAt    time.Time          `bson:"createdAt"`
-	UpdatedAt    time.Time          `bson:"updatedAt"`
-	LastLoggedAt time.Time          `bson:"lastLoggedAt"`
-	LastLoggedIp string             `bson:"lastLoggedIp"`
+	gorm.Model
+	Characters   []Character `gorm:"constraint:OnDelete:CASCADE;"`
+	Email        string      `gorm:"unique;uniqueIndex:idx_email"`
+	PasswordHash string
+	Sex          bool
+	Birthday     *time.Time
+	IsBanned     bool
+	IsLoggedIn   bool
+	LastLoggedAt time.Time `gorm:"autoCreateTime"`
+	LastLoggedIp string
 }

@@ -11,7 +11,11 @@ services:
       - "8484:8484"
     environment:
       MONGO_URI: mongodb://southperry:southperry@southperry_mongo:27017/southperry
-      MONGO_DB_NAME: southperry
+      MARIADB_DB_NAME: southperry
+      MARIADB_USER: southperry
+      MARIADB_PASSWORD: southperry
+      MARIADB_HOST: southperry_mariadb
+      MARIADB_PORT: 3306
       REDIS_ADDR: southperry_redis:6379
     networks:
       - southperry

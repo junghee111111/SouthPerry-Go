@@ -42,6 +42,8 @@ func ParseRequestCreateChar(payload []byte) model.Character {
 		Dex:    dex,
 		Int:    innt,
 		Luk:    luk,
+		Level:  1,
+		Map:    1,
 	}
 
 	return newCharacter

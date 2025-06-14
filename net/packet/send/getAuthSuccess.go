@@ -24,7 +24,7 @@ func BuildGetAuthSuccess(acc model.Account) []byte {
 	p.WriteByte(0)
 
 	// account info
-	p.WriteUint32(uint32(acc.AccId))
+	p.WriteUint32(uint32(acc.ID))
 	if acc.Sex == false {
 		p.WriteByte(0)
 	} else {

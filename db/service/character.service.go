@@ -9,20 +9,15 @@ package service
 import (
 	"SouthPerry/db/model"
 	"SouthPerry/db/repository"
-	"context"
-	"time"
 )
 
-func CreateCharacter(accId int, c *model.Character) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
+func CreateCharacter(accId uint, c *model.Character) {
 
 	if accId < 1 {
 		return
 	}
 
-	c.AccountId = accId
-	c.CharId = 1
+	c.AccountID = accId
 
-	repository.InsertCharacter(ctx, c)
+	repository.InsertCharacter(c)
 }

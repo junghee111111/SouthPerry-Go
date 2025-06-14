@@ -113,7 +113,7 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 	switch _op {
 	case enum.TryLogin:
 		email, password := recv.ParseTryLogin(payload)
-		//service.CreateAccount(email, password)
+		// service.CreateAccount(email, password)
 
 		respCode, account := service.CheckAccount(email, password)
 		if respCode != dbEnum.CheckAccountResp.Success {
@@ -139,7 +139,7 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 		SendPacket(c, p)
 	case enum.RequestCreateChar:
 		newCharacter := recv.ParseRequestCreateChar(payload)
-		service.CreateCharacter(c.account.AccId, &newCharacter)
+		service.CreateCharacter(c.account.ID, &newCharacter)
 
 		SendPacket(c, send.BuildResponseCreateChar(&newCharacter))
 	case enum.Pong:

@@ -2,22 +2,31 @@ package main
 
 import (
 	"SouthPerry/db"
+	"SouthPerry/db/model"
 	mapleNet "SouthPerry/net"
 	"context"
 	"log"
 	"net"
 	"os"
+	"strconv"
 	"time"
 )
 
 var mongoURI = os.Getenv("MONGO_URI")
 var mongoDbName = os.Getenv("MONGO_DB_NAME")
+var mariaDBUser = os.Getenv("MARIADB_USER")
+var mariaDBPassword = os.Getenv("MARIADB_PASSWORD")
+var mariaDBDbName = os.Getenv("MARIADB_DB_NAME")
+var mariaDBHost = os.Getenv("MARIADB_HOST")
+var mariaDBPort, mariaDBPortConvertErr = strconv.Atoi(os.Getenv("MARIADB_PORT"))
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	db.ConnectDB(ctx, mongoURI, mongoDbName)
+	db.ConnectMariaDB(mariaDBUser, mariaDBPassword, mariaDBHost, mariaDBDbName, mariaDBPort)
+	_ = db.MariaDB.AutoMigrate(&model.Account{})
+	_ = db.MariaDB.AutoMigrate(&model.Character{})
 
 	ln, err := net.Listen("tcp", ":8484")
 	if err != nil {

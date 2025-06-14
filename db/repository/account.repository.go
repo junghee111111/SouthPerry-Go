@@ -9,48 +9,34 @@ package repository
 import (
 	"SouthPerry/db"
 	"SouthPerry/db/model"
-	"context"
-	"go.mongodb.org/mongo-driver/bson"
 	"log"
+	"time"
 )
 
-func InsertAccount(ctx context.Context, email string, hashedPassword string) {
-	cAccount := db.DB.Collection("accounts")
+func InsertAccount(email string, hashedPassword string) {
 	newAccount := model.Account{
 		Email:        email,
 		PasswordHash: hashedPassword,
+		LastLoggedAt: time.Now(),
+		LastLoggedIp: "127.0.0.1",
 	}
-	_, err := cAccount.InsertOne(ctx, newAccount)
+	result := db.MariaDB.Select("Email", "PasswordHash", "LastLoggedAt", "LastLoggedIp").Create(&newAccount)
 
-	if err != nil {
+	if result.Error != nil {
 		log.Println("InsertAccount Error!", email, hashedPassword)
-		log.Printf("  ==> %v\n", err)
+		log.Printf("  ==> %v\n", result.Error)
 		return
 	}
 
 }
 
-func FindAccountByEmail(ctx context.Context, email string) (model.Account, error) {
-	cAccount := db.DB.Collection("accounts")
-	var storedAccount model.Account
-	err := cAccount.FindOne(ctx, bson.M{
-		"email": email,
-	}).Decode(&storedAccount)
+func FindAccountByEmail(email string) (model.Account, error) {
+	account := &model.Account{}
 
-	if err != nil {
-		log.Println("FindAccountByEmail Error!", email)
-		log.Printf("  ==> %v\n", err)
-		return model.Account{}, err
+	result := db.MariaDB.First(&account, "email = ?", email)
+	if result.Error != nil {
+		return *account, result.Error
 	}
 
-	return storedAccount, nil
-}
-
-func IsNameUsed(ctx context.Context, name string) bool {
-	foundCharacter := db.DB.Collection("characters")
-	var storeCharacter model.Character
-	err := foundCharacter.FindOne(ctx, bson.M{
-		"name": name,
-	}).Decode(&storeCharacter)
-	return err == nil
+	return *account, nil
 }
