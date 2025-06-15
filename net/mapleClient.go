@@ -113,7 +113,9 @@ func handlePacket(c *MapleClient, opcode []byte, payload []byte) {
 	switch _op {
 	case enum.TryLogin:
 		email, password := recv.ParseTryLogin(payload)
-		// service.CreateAccount(email, password)
+
+		/** uncomment if auto account creation is needed */
+		service.CreateAccount(email, password)
 
 		respCode, account := service.CheckAccount(email, password)
 		if respCode != dbEnum.CheckAccountResp.Success {

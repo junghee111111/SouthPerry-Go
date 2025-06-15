@@ -17,7 +17,7 @@ type Account struct {
 	Email        string      `gorm:"unique;uniqueIndex:idx_email"`
 	PasswordHash string
 	Sex          bool
-	Birthday     *time.Time
+	Birthday     time.Time
 	IsBanned     bool
 	IsLoggedIn   bool
 	LastLoggedAt time.Time `gorm:"autoCreateTime"`

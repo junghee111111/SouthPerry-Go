@@ -19,6 +19,10 @@ func InsertAccount(email string, hashedPassword string) {
 		PasswordHash: hashedPassword,
 		LastLoggedAt: time.Now(),
 		LastLoggedIp: "127.0.0.1",
+		IsLoggedIn:   false,
+		Sex:          false,
+		Birthday:     time.Now(),
+		IsBanned:     false,
 	}
 	result := db.MariaDB.Select("Email", "PasswordHash", "LastLoggedAt", "LastLoggedIp").Create(&newAccount)
 
